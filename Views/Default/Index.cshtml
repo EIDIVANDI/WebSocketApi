@@ -1,0 +1,58 @@
+﻿@{
+    Layout = null;
+}
+
+<script type="text/javascript" src="Scripts/jquery-2.0.2.js"></script>
+<script type="text/javascript">
+    var ws;
+    $().ready(function () {
+        $("#btnConnect").click(function () {
+            $("#result").append("connecting\n");
+            ws = new WebSocket("ws://websocketapiserver.com/api/WebSocket");
+            ws.onopen = function () {
+                $("#result").append("connected\n");
+            };
+            ws.onmessage = function (evt) {
+                $("#result").append(evt.data + "\n");
+            };
+            ws.onerror = function (evt) {
+                $("#result").append(evt.message + "\n");
+            };
+            ws.onclose = function () {
+                $("#result").append("disconnected\n");
+            };
+        });
+        $("#btnSend").click(function () {
+            if (ws.readyState == WebSocket.OPEN) {
+                ws.send($("#txtmessage").val());
+                $("#txtmessage").val('').focus();
+
+            }
+            else {
+                $("#result").append("Connection is closed\n");
+            }
+        });
+        $("#btnDisconnect").click(function () {
+            ws.close();
+        });
+    });
+</script>
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Websocket client</title>
+
+</head>
+<body>
+    <input id="btnConnect" type="button" value="Connect to server" />
+    <input type="button" value="Disconnect" id="btnDisconnect" />
+    <br />
+    <textarea id="result" readonly style="width:100%"></textarea>
+    <br />
+    <input id="txtmessage" type="text" style="width:100%" />
+    <input id="btnSend" type="button" value="Send" />
+</body>
+</html>
